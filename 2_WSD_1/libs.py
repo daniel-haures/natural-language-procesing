@@ -14,7 +14,9 @@ def wu_similarity(v1,v2):
     lcs = LCS(v1,v2)
     if(not lcs):
         return 0
-    wu = (2*(lcs[0].max_depth()+1))/(v1.max_depth()+v2.max_depth()+2)
+    #print(lcs[0].max_depth())
+    #wu = (2*(lcs[0].max_depth()+1))/(v1.max_depth()+v2.max_depth()+2)
+    wu = (2*(depth(lcs[0])))/(depth(v1)+depth(v2))
     return round(wu,3)
 
 
@@ -63,14 +65,28 @@ def LCS(s1,s2):
         return []
     
 
-tiger=wn.synsets('weather')
-cat=wn.synsets('forecast')
-print(tiger)
-print(cat)
+def depth(v1):
+    count = 1
+    hypernym = v1
+    #print(hypernym)
+    while str(hypernym.hypernyms()) != "[]":
+        #print(str(hypernym))
+        hypernym = hypernym.hypernyms()[0]
+        #print(hypernym)
+        count=count+1
+    return count
 
-for s1 in tiger:
-    for s2 in cat:
-        print(LCS(s1,s2))
-        print(s1.lowest_common_hypernyms(s2))
+
+#tiger=wn.synsets('tiger')
+#cat=wn.synsets('cat')
+#print(tiger)
+#print(cat)
+
+#for s1 in tiger:
+#    for s2 in cat:
+#        wu_similarity(s1,s2)
+        
+
+        
 
 
