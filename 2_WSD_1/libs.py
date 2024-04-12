@@ -2,14 +2,15 @@ import nltk
 import scipy
 import pandas as pd
 import numpy as np
+import math
 
 import csv
 from nltk.corpus import wordnet as wn
 
 
 #MAX_DEPTH = max(max(len(hyp_path) for hyp_path in ss.hypernym_paths()) for ss in wn.all_synsets())
-MAX_DEPTH=20
-
+MAX_DEPTH=19
+print(-math.log(1/((2*MAX_DEPTH)+1)))
 #Wu & Palmer similarity
 def wu_similarity(v1,v2):
     if(v1==v2):
@@ -31,7 +32,20 @@ def sp_similarity(v1,v2):
     return sp
 
 #Leak & Chod
-#def lch_similarity(v1,v2):
+def lch_similarity(v1,v2):
+    _ , len = LCS(v1,v2)
+    lch=0
+    if len is None:
+        lch=0
+    elif (len==0):
+        #print(v1)
+        #print(v2)
+        #print('Zeroh')
+        lch=math.log10((2*MAX_DEPTH+1))
+    else:
+        lch=-math.log10((len)/(2*MAX_DEPTH))
+    return lch
+
 
 def LCS(s1,s2):
     #SE s1 e s2 sono uguali?
@@ -86,14 +100,20 @@ def depth(v1):
         count=count+1
     return count
 
-tiger=wn.synsets('cock')
-cat=wn.synsets('pussy')
+tiger=wn.synsets('tiger')
+cat=wn.synsets('tiger')
 #print(tiger)
 #print(cat)
-
-print(tiger[0].shortest_path_distance(cat[0]))
-_ , spd= LCS(tiger[0],cat[0])
+lcs , spd = LCS(tiger[0],tiger[0])
 print(spd)
+print(lcs)
+
+for s1 in tiger:
+    for s2 in cat:              
+        print(s1.shortest_path_distance(s2))
+        lcs , spd = LCS(s1,s2)
+        print(spd)
+        print(lcs)
 
 
 
