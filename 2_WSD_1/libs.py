@@ -3,14 +3,13 @@ import scipy
 import pandas as pd
 import numpy as np
 import math
-
 import csv
 from nltk.corpus import wordnet as wn
 
 
-#MAX_DEPTH = max(max(len(hyp_path) for hyp_path in ss.hypernym_paths()) for ss in wn.all_synsets())
+#MAX_DEPTH = max(depth(ss) for ss in wn.all_synsets())
 MAX_DEPTH=19
-print(-math.log(1/((2*MAX_DEPTH)+1)))
+
 #Wu & Palmer similarity
 def wu_similarity(v1,v2):
     if(v1==v2):
@@ -31,24 +30,20 @@ def sp_similarity(v1,v2):
         sp=2*MAX_DEPTH-len
     return sp
 
-#Leak & Chod
+#Leak & Chod similarity
 def lch_similarity(v1,v2):
     _ , len = LCS(v1,v2)
     lch=0
     if len is None:
         lch=0
     elif (len==0):
-        #print(v1)
-        #print(v2)
-        #print('Zeroh')
         lch=math.log10((2*MAX_DEPTH+1))
     else:
         lch=-math.log10((len)/(2*MAX_DEPTH))
     return lch
 
-
+#returns the lcs and shortest path of two synset
 def LCS(s1,s2):
-    #SE s1 e s2 sono uguali?
     s1_dict = {str(s1):0}
     s2_dict = {str(s2):0}
     s1_to_expand = [s1]
@@ -78,20 +73,17 @@ def LCS(s1,s2):
 
         level+=1
     
-    if (len(matches) > 1): #se c'è più di un match allora 
-        #min(common_hypernyms, key=lambda x: x.shortest_path_distance(synset1) + x.shortest_path_distance(synset2))
-        min=matches[0]
-        for actual in matches:
-            value_min=s1_dict.get(str(min))+s2_dict.get(str(min))
-            value_actual=s1_dict.get(str(actual))+s2_dict.get(str(actual))
-            if(value_actual<value_min):
-                min=actual
-        return [min] , (s1_dict.get(str(min))+s2_dict.get(str(min)))
-    elif (len(matches)==1):#se c'è solo un mathc
+    if (len(matches) > 1): 
+        lcs = min(matches, key=lambda x: s1_dict.get(str(x)) + s2_dict.get(str(x)))
+        return [lcs] , (s1_dict.get(str(lcs))+s2_dict.get(str(lcs)))
+    
+    elif (len(matches)==1):
         return matches , (s1_dict.get(str(matches[0]))+s2_dict.get(str(matches[0])))
+    
     else:
         return [], None
 
+#return the maximum depth from root to v1
 def depth(v1):
     count = 1
     hypernym = v1
@@ -99,26 +91,6 @@ def depth(v1):
         hypernym = hypernym.hypernyms()[0]
         count=count+1
     return count
-
-tiger=wn.synsets('tiger')
-cat=wn.synsets('tiger')
-#print(tiger)
-#print(cat)
-lcs , spd = LCS(tiger[0],tiger[0])
-print(spd)
-print(lcs)
-
-for s1 in tiger:
-    for s2 in cat:              
-        print(s1.shortest_path_distance(s2))
-        lcs , spd = LCS(s1,s2)
-        print(spd)
-        print(lcs)
-
-
-
-#print(LCS(tiger[1],cat[0]))
-#print(tiger[1].lowest_common_hypernyms(cat[0]))
 
 
         
