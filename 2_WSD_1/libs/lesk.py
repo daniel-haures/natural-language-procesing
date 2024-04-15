@@ -8,10 +8,9 @@ import google.generativeai as genai
 ##GEMINI SET-UP
 genai.configure(api_key="AIzaSyBjFgxtyUvVOt8SXOGlX2vRCogyYfxm4Ik")
 generation_config = {
-  "temperature": 0.7,
+  "temperature": 0.3,
   "top_p": 0.9,
-  "top_k": 1,
-  "max_output_tokens": 2048,
+  "top_k": 70
 }
 
 safety_settings = [
@@ -50,7 +49,7 @@ def lesk_algorithm(word, sentence):
     context = cleaning(sentence)
     for sense in wn.synsets(word):
         #signature = get_signature(sense)
-        signature = gemini_get_signature(sense)
+        signature = get_signature(sense)
         overlap = get_overlap(signature, context) 
         if overlap>max_overlap:
             max_overlap=overlap
@@ -74,11 +73,6 @@ def cleaning(sentence):
 def get_signature(sense):
      return cleaning(sense.definition())
 
-def gemini_get_signature(word, sense):
-  prompt_parts = ["write some examples which contain the word ",word," defined as ",sense.definition()]
-  response = model.generate_content(prompt_parts)
-  return cleaning(response.text)
-
 #counting the number of shared words
 def get_overlap(signature,context):
  sig=set(signature)
@@ -86,12 +80,26 @@ def get_overlap(signature,context):
  intersection = con.intersection(sig)
  return len(intersection)
 
+def gemini_get_signature(word, sense):
+  prompt_parts = ["write some example which contains the word", word,"defined as", sense.definition()]
+  response = model.generate_content(prompt_parts)
+  text_response=''
+  for candidate in response.candidates:
+            text_response= ' '.join([part.text for part in candidate.content.parts])
+  print(text_response)
+  print('----------------')
+  return text_response
+  
+
+
+
 
 def gemini_lesk_algorithm(word, sentence):
     best_sense = wn.synsets(word)[0]
     max_overlap = 0
     context = cleaning(sentence)
     for sense in wn.synsets(word):
+        print("passo")
         signature = gemini_get_signature(word,sense)
         overlap = get_overlap(signature, context) 
         if overlap>max_overlap:
