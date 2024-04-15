@@ -1,6 +1,9 @@
 import string
 import random
 from nltk.corpus import wordnet as wn
+from nltk.stem import WordNetLemmatizer
+lemmatizer = WordNetLemmatizer()
+
 
 PUNCTUATION = string.punctuation
 STOPWORDS = set(line.strip() for line in open('data\\stop_words_FULL.txt'))
@@ -22,13 +25,17 @@ def lesk_algorithm(word, sentence):
 
 
 # clean the sentence from punctuation and stopwords
+#eliminare i nomi propri
 def cleaning(sentence):
     sentence = sentence.lower()
     for p in PUNCTUATION:
         sentence = sentence.replace(p, ' ')
     sentence = sentence.split()
     sentence=[i for i in sentence if i not in STOPWORDS]
+    lemmatized_sentece=[lemmatizer.lemmatize(i) for i in sentence]
+    #lemmatizazione
     return sentence
+
 
 #get all the set of words in the gloss and examples of sense
 def get_signature(sense):
@@ -41,12 +48,6 @@ def get_overlap(signature,context):
  intersection = con.intersection(sig)
  return len(intersection)
 
-#pick a random word
-def random_word(semcor_words):
-    i = len(semcor_words)
-    random_num = random.randint(0, i-1)
-    return semcor_words[random_num]
 
-
-#print(cleaning("romeo and Juliet"))
-print(lesk_algorithm("bed","love to bed"))
+#print(cleaning("foxes and Juliet I'm hoping to go jogging I haven't eaten in a while where is everybody going"))
+#print(lesk_algorithm("bed","love to bed"))
