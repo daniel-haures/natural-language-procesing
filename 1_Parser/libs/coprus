@@ -1,0 +1,19 @@
+def check_projectivity(heads):
+    heads.insert(0,0)
+    for index,_ in enumerate(heads):
+        if not check_head_tail(index,heads[index],heads):
+            return False
+    return True
+
+#n_head: head of arrow
+#n_tail: children of arrow
+#heads: mapping 
+def check_head_tail(n_head,n_tail,heads):
+    if(n_head==n_tail and n_head==0):
+        return True
+    for i in range (n_head+1,n_tail):
+        if heads[i]<n_head or heads[i]>n_tail:
+            return False
+    return True
+
+print(check_projectivity([2,3,0,5,3,5,8,6,0]))
