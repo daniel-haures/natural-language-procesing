@@ -1,3 +1,4 @@
 .venv/
 1_Parser/aclImdb_v1.tar.gz
 1_Parser/aclImdb/
+1_Parser/data/batches/
