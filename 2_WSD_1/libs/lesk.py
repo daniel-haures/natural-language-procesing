@@ -81,7 +81,7 @@ def get_overlap(signature,context):
  return len(intersection)
 
 def gemini_get_signature(word, sense):
-  prompt_parts = ["write some example which contains the word", word,"defined as", sense.definition()]
+  prompt_parts = ["Can you write some examples which contains the word ", word," defined as ", sense.definition()]
   response = model.generate_content(prompt_parts)
   text_response=''
   for candidate in response.candidates:
@@ -108,4 +108,3 @@ def gemini_lesk_algorithm(word, sentence):
     return best_sense
 
 
-print(gemini_lesk_algorithm("bed","I am going to bed early because I'm tired"))
